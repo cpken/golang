@@ -5,8 +5,9 @@
 ~~~
 学习 Go 程序的基本结构。
 ~~~
-~~~
+
 [流程控制语句：for、if、else、switch 和 defer](https://tour.go-zh.org/flowcontrol/1)
+~~~
 学习如何使用条件、循环、分支和推迟语句来控制代码的流程。
 ~~~
 ~~~

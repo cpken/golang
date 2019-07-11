@@ -1,12 +1,11 @@
 ### 基础
 定义变量、调用函数。
-[baidu](http://baidu.com)  
 ~~~
-[[!包、变量和函数]](https://tour.go-zh.org/basics/1)
+[包、变量和函数](https://tour.go-zh.org/basics/1)
 学习 Go 程序的基本结构。
 ~~~
 ~~~
-[![流程控制语句：for、if、else、switch 和 defer](https://tour.go-zh.org/flowcontrol/1)]
+[流程控制语句：for、if、else、switch 和 defer](https://tour.go-zh.org/flowcontrol/1)
 学习如何使用条件、循环、分支和推迟语句来控制代码的流程。
 ~~~
 ~~~

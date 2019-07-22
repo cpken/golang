@@ -4,8 +4,8 @@
 
 ### 目录
 1. Go 起源，发展与普及
-2. [安装与运行环境](https://github.com/cpken/theWayToGoNote/02/README.md)
-3. [编辑器、集成开发环境与其它工具](https://github.com/cpken/theWayToGoNote/03/README.md)
+2. [安装与运行环境](https://github.com/cpken/theWayToGoNote/tree/master/02)
+3. [编辑器、集成开发环境与其它工具](https://github.com/cpken/theWayToGoNote/tree/master/03)
 4. 基本结构和基本数据类型
 5. 控制结构
 6. 函数(function)

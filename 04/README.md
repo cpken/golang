@@ -228,3 +228,43 @@ func functionName()
 ~~~
 
 在括号 <code>()</code> 中写入 0 个或多个函数的参数（使用逗号 <code>,</code> 分隔），每个参数的名称后面必须紧跟其类型。  
+
+<code>main</code> 函数是每一个可执行程序所必须包含的，一般来说都是在启动后第一个执行的函数（如果有 <code>init ()</code> 函数则会先执行该函数）。
+如果你的 <code>main</code> 包的源代码没有包含 <code>main</code> 函数，则会引发构建错误 "undefined: main.main。main" 函数既没有参数，也没有返回类型（与 C 
+家族中的其它语言恰好相反）。
+如果你不小心为 <code>main</code> 函数添加了参数或者返回类型，将会引发构建错误：
+
+~~~
+func main must have no arguments and no return values results.
+~~~
+
+在程序开始执行并完成初始化后，第一个调用（程序的入口点）的函数是 <code>main.main()</code>（如：C 语言），该函数一旦返回就表示程序已成功执行并立即退出。  
+
+函数里的代码（函数体）使用大括号 <code>{}</code> 括起来。
+
+左大括号 <code>{</code> 必须与方法的声明放在同一行，这是编译器的强制规定，否则你在使用 gofmt 时就会出现错误提示：
+
+~~~
+`build-error: syntax error: unexpected semicolon or newline before {`
+~~~
+
+（这是因为编译器会产生 <code>func main() ;</code> 这样的结果，很明显这错误的）  
+
+
+Go 语言虽然看起来不使用分号作为语句的结束，但实际上这一过程是由编译器自动完成，因此才会引发像上面这样的错误。
+
+右大括号 <code>}</code> 需要被放在紧接着函数体的下一行。如果你的函数非常简短，你也可以将它们放在同一行：
+
+~~~go
+func Sum(a, b innt) int { return a + b }
+~~~
+
+
+只有当某个函数需要被外部包调用的时候才使用大写字母开头，并遵循 Pascal 命名法；否则就遵循骆驼命名法，即第一个单词的首字母小写，其余单词的首字母大写。  
+
+当被调用函数的代码执行到结束符 <code>}</code> 或返回语句时就会返回，然后程序继续执行调用该函数之后的代码。  
+
+程序正常退出的代码为 0 即 "Program exited with code 0"；如果程序因为异常而被终止，则会返回非零值，如：1。这个数值可以用来测试是否成功执行一个程序。
+
+
+#### 4.2.3 注释

@@ -352,9 +352,9 @@ int 是变量 a 的底层类型，这也使得它们之间存在相互转换的�
 
 ~~~go
 type (
-	IZ  int
-	FZ  float64
-	STR string
+  IZ  int
+  FZ  float64
+  STR string
 )
 ~~~
 

@@ -605,4 +605,110 @@ var b bool = false
 var str string = "Go says hello to the world~"
 ~~~
 
+Go 在编译时就完成了类型推断过程，使用下面的代码形式来声明及初始化变量：
 
+~~~go
+var a   = 15
+var b   = false
+var str = "Go says hello to the world!" 
+~~~
+
+或：
+
+~~~go
+var (
+  a        = 15
+  b        = false
+  str      = "Go says hello to the world!"
+  numShips = 50
+  city string
+)
+~~~
+
+自动推断类型非任何时候都适用，当你想要给变量的类型并不是自动推断出的某种类型时，你需要显式指定变量的类型，例如：
+
+~~~go
+var n int64 = 2
+~~~
+
+<code>var a</code> 语法是错误的，因为编辑器无自动推断类型的一句。  
+
+声明包级别的全局变量，例如：
+
+~~~go
+var (
+  HOME   = os.Getenv("HOME")
+  USER   = os.Getenv("USER")
+  GOROOT = os.Getenv("GOROOT")  
+)
+~~~
+
+在函数体内声明局部变量，可以使用简短声明语法 <code>:=</code>，例如：
+
+~~~go
+a := 1
+~~~
+
+下面例子
+- <code>runtime</code> 获取操作系统类型
+- <code>os</code> 包中的 <code>os.Getenv()</code> 获取环境变量中的值，并保存到 string 类型的局部变量 path 中。
+
+~~~go
+package main
+
+import (
+  "fmt"
+  "runtime"
+  "os"
+)
+
+func main() {
+  var goos string = runtime.GOOS
+  fmt.Printf("The operating system is: %s\n", goos)
+  path := os.Getenv("PATH")
+  fmt.Printf("Path is %s\n", path)
+}
+~~~
+
+
+#### 4.4.2 值类型和引用类型
+
+通过 &i 来获取变量 i 的内存地址。值类型的变量的值存储在栈中。  
+
+内存地址被称为指针。  
+
+同一个引用类型的指针指向的多个字可以是在连续的内存地址中（内存布局是连续的），
+也会将这些字分散存放在内存中，每个字都指示了下一个字所在的内存地址。  
+
+当使用赋值语句 <code>r2 = r1</code> 时，只有引用（地址）被复制。  
+
+如果 r1 的值被改变了，这个值的所有引用都会指向被修改后的内容。  
+
+在 Go 语言中，指针属于引用类型。  
+
+其他引用类型
+- slices
+- maps
+- channel
+
+被引用的变量会存储在堆中，以便进行垃圾回收，且比栈拥有更大的内存空间。
+
+
+#### 4.4.3 打印
+
+函数 <code>Printf</code> 主要用于打印输出到控制台。大写字母表示可以外部使用。  
+
+~~~go
+func Printf(format string, list of variables to be printend)
+~~~
+
+格式化字符串可以含有一个或多个的格式化标识符。
+
+- <code>%..</code> 可以被不同类型所对应的标识符替换
+- <code>%s</code> 代表字符串标识符
+- <code>%v</code> 代表使用类型的默认输出格式的标识符
+
+这些标识符所对应的值从格式化字符串后的第一个逗号开始按照相同顺序添加，如果参数超过 1 个则同样需要使用逗号分隔。  
+
+
+#### 4.4.4 简短形式，使用 := 赋值操作符

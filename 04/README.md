@@ -1,5 +1,16 @@
 ### 第四章 基本结构和基本数据类型
 
+- 4.1 文件名、关键字与标识符
+- 4.2 Go 程序的基本结构和要素
+- 4.3 常量
+- 4.4 变量
+- 4.5 基本类型和运算符
+- 4.6 字符串
+- 4.7 strings 和 strconv 包
+- 4.8 时间和日期
+- 4.9 指针
+
+
 #### 4.1 文件名、关键字与标识符
 
 Go 文件命名规则
@@ -759,4 +770,69 @@ a, b, c := 5, 7, "abc"
 
 右边的这些值以相同的顺序赋值给左边的变量，所以 a 的值是 <code>5</code>，b 的值是 <code>7</code>，c 的值是 <code>"abc"</code>。
 
-这被称为 **并行** 或 **同时** 赋值。
+这被称为 **并行** 或 **同时** 赋值。  
+
+如果你想要交换两个变量的值，则可以简单地使用 <code>a, b = b, a</code>。  
+
+（在 GO 语言中，这样省去了使用交换函数的必要）  
+
+空白标识符 <code>_</code> 也被用于抛弃值，如值 <code>5</code> 在：<code>_, b = 5, 7</code> 中被抛弃。  
+
+<code>_</code> 是一个只写变量，不能得到它的值。因为 Go 语言中必须使用所有被声明的变量，但是有时并不需要使用从一个函数得到的所有返回值。  
+
+并行赋值也被用于当一个函数返回多个返回值时，
+比如这里的 <code>val</code> 和错误 <code>err</code> 是通过调用 <code>Func1</code> 函数同时得到：<code>val, err 
+= Func1(var1)</code>。
+
+
+#### 4.4.5 init 函数
+
+init 函数会在每个包完成初始化后自动执行，并且执行优先级高于 main 函数。  
+
+每个源文件都只能包含一个 init 函数。初始化总是以单线程执行，并且按照包的依赖关系顺序执行。  
+
+示例 4.6 init.go ：
+
+~~~go
+package trans
+
+import "math"
+
+var Pi float64
+
+func init() {
+  Pi = 4 * math.Atan(1) // init() function computes Pi
+}
+~~~
+
+在它的 init 函数中计算变量 Pi 的初始值。  
+
+示例 4.7 user_init.go 中导入了包 trans（需要 init.go 目录为 ./trans/init.go）并且使用到了变量 Pi：
+
+~~~go
+package main
+
+import (
+  "fmt"
+  "./trans"
+)
+
+var twoPi = 2 * trans.Pi
+
+func main() {
+  fmt.Printf("2*Pi = %g\n", twoPi) // 2*Pi = 6.283185307179586
+}
+~~~
+
+init 函数也经常被用在当一个程序开始之前调用后台执行的 goroutine，如下例子中的 <code>backend</code>：
+
+~~~go
+func init() {
+  // setup preparations
+  go backend()
+}
+~~~
+
+
+#### 4.5 基本类型和运算符
+

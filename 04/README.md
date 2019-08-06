@@ -712,3 +712,51 @@ func Printf(format string, list of variables to be printend)
 
 
 #### 4.4.4 简短形式，使用 := 赋值操作符
+
+<code>:=</code> 赋值操作符只能被用在函数体内，而不能用于全局变量的声明与赋值。
+其可以高效地创建一个新的变量，称之为初始化声明。
+
+##### 注意事项
+
+在同一代码块中，不可以再次对于相同名称的变量使用初始化声明，例如：<code>a := 50</code>，再进行 <code>a := 20</code>不是不允许的，
+编辑器会提示错误 <code>no new variables on left side of :=</code>，但是 <code>a = 20</code> 是可以的，
+因为这是给相同的变量赋予一个新的值。  
+
+如果你在定义变量 a 之前使用它，则会得到编译错误 <code>undefined: a</code>。  
+
+如果你声明一个局部变量却没有在相同的代码块中使用它，同样会得到编译错误，例如下例当中的变量 a：
+
+~~~go
+func main() {
+  var a string = "abc"
+  fmt.Println("hello, world")
+}
+~~~
+
+尝试编译这段代码将得到错误 <code>a declared and not used</code>。  
+
+此外，单纯地给 a 赋值也是不够的，这个值必须被使用，所以使用 <code>fmt.Println("hello, world", a)</code> 会移除错误。  
+
+但是全局变量是允许声明但不使用。
+
+简短形式的变量声明：
+
+~~~go
+var a, b, c int
+~~~
+
+多变量同一行赋值：
+
+~~~go
+a, b, c = 5, 7, "abc"
+~~~
+
+或
+
+~~~go
+a, b, c := 5, 7, "abc"
+~~~
+
+右边的这些值以相同的顺序赋值给左边的变量，所以 a 的值是 <code>5</code>，b 的值是 <code>7</code>，c 的值是 <code>"abc"</code>。
+
+这被称为 *并行* 或 *同时* 赋值。

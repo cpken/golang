@@ -909,3 +909,139 @@ F || F -> false
 
 #### 4.5.2.1  整型 int 和浮点型 float
 
+Go 语言支持整型和浮点型数字，并且原生支持复数，其中位的运算采用补码。  
+
+Go 基于架构的类型，例如：int、uint 和 uintptr。  
+
+架构类型的长度是根据运行程序所在的操作系统类型所决定的：
+
+- <code>int</code> 和 <code>uint</code> 在 32 位操作系统上，均使用 32 位（4 个字节），在 64 位操作系统上，均使用 64 位（8 个字节）。
+- <code>uintptr</code> 的长度被设定为足够存放一个指针即可。
+
+Go 语言中没有 float 类型。 // 应该是 go 没有 double 类型吧？  
+
+##### 整数：
+
+- int8（-128 -> 127）
+- int16（-32768 -> 32767）
+- int32（-2,147,483,648 -> 2,147,483,647）
+- int64（-9,223,372,036,854,775,808 -> 9,223,372,036,854,775,807）
+
+
+##### 无符号整数：
+
+- uint8（0 -> 255）
+- uint16（0 -> 65,535）
+- uint32（0 -> 4,294,967,295）
+- uint64（0 -> 18,446,744,073,709,551,615）
+
+
+###### 浮点型（IEEE-754 标准）：
+
+- float32（+- 1e-45 -> +- 3.4 * 1e38）
+- float64（+- 5 1e-324 -> 107 1e308）
+
+int 型是计算最快的一种类型。  
+
+整型的零值为 0，浮点型的零值为 0.0。  
+
+float32 精确到小数点后 7 位，float64 精确到小数点后 15 位。  
+
+应该尽可能地使用 float64，因为 math 包中所有有关数学运算的函数都会要求接收这个类型。  
+
+通过增加前缀 0 来表示 8 进制数（如：077），增加前缀 0x 来表示 16 进制数（如：0xFF），以及使用 e 来表示 10 的连乘（如： 1e3 = 1000，或者 6.022e23 = 6.022 x 1e23）。  
+
+使用 <code>a := uint64(0)</code> 来同时完成类型转换和赋值操作，这样 a 的类型就是 uint64。  
+
+Go 中不允许不同类型之间的混合使用，但是对于常量的类型限制非常少，因此允许常量之间的混合使用，如下（该程序无法通过编译）：  
+
+示例 4.8 type_mixing.go 
+
+~~~go
+package main
+
+func main() {
+    var a int
+    var b int32
+    a = 15
+    b = a + a    // 编译错误
+    b = b + 5    // 因为 5 是常量，所以可以通过编译
+}
+~~~
+
+如果你尝试编译该程序，则将得到编译错误 <code>cannot use a + a (type int) as type int32 in assignment</code>。  
+
+同样地，int16 也可以被隐式转换为 int32.  
+
+下面这个程序展示了通过显式转换来避免这个问题（第 4.2 节）。  
+
+示例 4.9 casting.go
+
+~~~go
+package main
+
+import "fmt"
+
+func main() {
+    var n int16 = 34
+    var m int32
+    // compiler error: cannot use n (type int16) as type int32 in assignment
+    //m = n
+    m = int32(n)
+
+    fmt.Printf("32 bit int is: %d\n", m)
+    fmt.Printf("16 bit int is: %d\n", n)
+}
+~~~
+
+输出：
+
+~~~go
+32 bit int is: 34
+16 bit int is: 34
+~~~
+
+#### 格式化说明符
+
+- %d  格式化整数（%x 和 %X 用于格式化 16 进制表示的数字）
+- %g  格式化浮点型（%f 输出浮点数，%e 输出科学计数表示法）
+- %0d 规定输出定长的整数，其中开头的数字 0 是必须的。
+
+<code>%n.mg</code> 用于表示数字 n 并精确到小数点后 m 位，除了使用 g 之外，还可以使用 e 或者 f，例如：使用格式化字符串 <code>%5.2e</code> 来输出 3.4 的结果为 <code>3
+.40e+00</code>。
+
+
+#### 数字值转换
+
+当进行类似 <code>a32bitInt = int32(a32Float)</code> 的转换时，小数点后的数字将被丢弃。
+这种情况一般发生当从取值范围较大的类型转换为取值范围较小的类型时，或者你可以写一个专门用于处理类型转换的函数来确保没有发生精度的丢失。
+下面这个例子展示如何安全地从 int 型转换为 int8：
+
+~~~go
+func Uint8FromInt(n int) (uint8, error) {
+    if 0 <= n && n <= math.MaxUint8 { // conversion is safe
+        return uint8(n), nil
+    }
+    return 0, fmt.Errorf("%d is out of the uint8 range", n)
+}
+~~~
+
+或者安全地从 float64 转换为 int：
+
+~~~go
+func IntFromFloat64(x float64) int {
+    if math.MinInt32 <= x && x <= math.MaxInt32 { // x lies in the integer range
+        whole, fraction := math.Modf(x)
+        if fraction >= 0.5 {
+            whole++
+        }
+        return int(whole)
+    }
+    panic(fmt.Sprintf("%g is out of the int32 range", x))
+}
+~~~
+
+不过如果你实际存的数字超出你要转换到的类型的取值范围的话，则会引发 panic（第 13.2 节）。
+
+
+#### 4.5.2.2 复数

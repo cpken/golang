@@ -1362,3 +1362,175 @@ U+0041 - U+03B2 - U+101234
 
 
 这些函数返回一个布尔值。包 utf8 拥有更多与 rune 相关的函数。
+
+
+#### 4.6 字符串
+
+Go 中的字符串需要占用 1 至 4 个字节，这不仅减少了内存和硬盘的空间占用，同时也不用像其它语言那这样需要对使用 UTF-8 字符集的文本进行编码和解码。  
+
+Go 支持 2 钟形式的字面值：
+
+- 解释字符串
+
+该类字符串使用双引号括起来，其中的相关的转义符将被替换。
+
+1. <code> \n </code>：换行符
+2. <code> \r </code>：回车符
+3. <code> \t </code>：tab 键
+4. <code> \u </code> 或 <code> \U </code>：Unicode 字符
+5. <code> \\ </code>：反斜杠自身
+
+
+- 非解释字符串
+
+该类字符串使用反引号括起来，支持换行，例如：
+
+~~~go
+`This is a raw string \n` 中的 `\n\` 会被原样输出
+~~~
+
+
+Go 中的字符串根据长度限定，二非特殊字符 <code> \0 </code>。  
+
+<code> string </code> 类型的零值为长度为零的字符串，即空字符串 <code> "" </code>。  
+
+一般的比较运算符（<code>==</code>、<code>!=</code>、<code> < </code>、<code><=</code>、<code> >= </code>、<code> > 
+</code>）通过在内存中按字节比较来实现字符串的对比。  
+
+函数 <code>len()</code> 来获取字符串所占的字节长度，例如：<code> len(str) </code>。  
+
+字符串的内容（纯字节）可以通过标准索引法来获取，在中括号 <code> [] </code> 内写入索引，索引从 0 开始计数：
+
+- 字符串 str 的第 1 个字节：<code>str[0]</code>
+- 第 i 个字节：<code>str[i - 1]</code>
+- 最后 1 个字节：<code>str[len(str)-1]</code>
+
+需要注意的是，这种转换方案只对纯 ASCII 码的字符串有效。  
+
+注意事项 获取字符串中某个字节的地址的行为是非法的，例如：<code>&str[i]</code>。  
+
+
+##### 字符串拼接符 <code>+</code>
+
+两个字符串 s1 和 s2 可以通过 <code>s := s1 + s2</code> 拼接在一起。    
+
+s2 追加在 s1 尾部并生成一个新的字符串 s。  
+
+你可以通过以下方式来对代码中多行的字符串进行拼接：
+
+~~~go
+str := "Beginning of the string " +
+    "second part of the string"
+~~~
+
+由于编译器行尾自动补全分号的缘故，加号 + 必须放在第一行。  
+
+拼接的简写形式 += 也可以用于字符串：
+
+~~~go
+s := "hel" + "lo,"
+s += "world!"
+fmt.Println(s) //输出 “hello, world!”
+~~~
+
+在循环中使用加号 + 拼接字符串并不是最高效的做法，更好的办法是使用函数 strings.Join(),使用字节缓冲（bytes.Buffer）拼接更加好。  
+
+
+#### 4.7 strings 和 strconv 包
+
+Go 使用 <code>strings</code> 包来完成对字符串的主要操作。
+
+#### 4.7.1 前缀和后缀
+
+<code>HasPrefix</code> 判断字符串 s 是否以 prefix 开头：
+
+~~~go
+strings.HasPrefix(s, prefix string) bool
+~~~
+
+HasSuffix 判断字符串 s 是否以 prefix 开头：
+
+~~~go
+strings.HasSuffix(s, suffix string) bool
+~~~
+
+
+#### 4.7.2 字符串包含关系
+
+Contains 判断字符串 s 是否包含 substr：
+
+~~~go
+strings.Contains(s, substr string) bool
+~~~
+
+
+#### 4.7.3 判断子字符串或字符在父字符串中出现的位置（索引）
+
+Index 返回字符串 str 在字符串 s 中的索引（str 的第一个字符的索引），-1 表示字符串 s 不包含字符串 str：
+
+~~~go
+strings.Index(s, str string) int
+~~~
+
+如果 ch 是非 ASCII 编码的字符，建议使用以下函数来对字符进行定位：
+
+~~~go
+strings.IndexRune(s string, r rune) int
+~~~
+
+
+#### 4.7.4 字符串替换
+
+Replace 用于将字符串 str 中的前 n 个字符串 old 替换为字符串 new，并返回一个新的字符串，如果 n = -1 则替换所有字符串 old 为字符串 new：
+
+~~~go
+strings.Replace(str, old, new, n) string
+~~~
+
+
+#### 4.7.5 统计字符串出现次数
+
+Count 用于计算字符串 str 在字符串 s 中出现的非重叠次数：
+
+~~~go
+strings.Count(s, str string) int
+~~~
+
+
+#### 4.7.6 重复字符串
+
+Repeat 用于重复 count 次字符串 s 并返回一个新的字符串：
+
+~~~go
+strings.Repeat(s, count int) string
+~~~
+
+#### 4.7.7 修改字符串大小写
+
+ToLower 将字符串中的 Unicode 字符串全部转换为相应的小写字符：
+
+~~~go
+strings.ToLower(s) string
+~~~
+
+ToUpper 将字符串中的 Unicode 字符全部转换为相应的大写字符：
+
+~~~go
+strings.ToUpper(s) string
+~~~
+
+#### 4.7.8 修剪字符串
+
+strings.TrimSpace(s) 删除字符串开头和结尾的空白符号；  
+strings.TrimSpace(s, "cut") 删除开头或结尾的 cut 字符。
+TrimLeft  删除左边。  
+TrimRight 删除右边。
+
+
+#### 4.7.8 修剪字符串
+
+
+
+
+
+

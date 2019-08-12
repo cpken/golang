@@ -1527,10 +1527,164 @@ TrimLeft  删除左边。
 TrimRight 删除右边。
 
 
-#### 4.7.8 修剪字符串
+#### 4.7.9 分割字符串
+
+strings.Fields(s) 将会利用 1 个或多个空白符号来作为动态长度的分隔符将字符串分割成若干小块，并返回一个 slice，如果字符串只包含空白符号，则返回一个长度为 0 的 slice。  
+
+strings.Split(s, sep) 用于自定义分割符号来对指定字符串进行分割，同样返回 slice。
 
 
+#### 4.7.10 拼接 slice 到字符串
+
+Join 用于将元素类型为 string 的 slice 使用分割符号来拼接组成一个字符串：
+
+~~~go
+strings.join(sl []string, sep string) string
+~~~
+
+#### 4.7.11 从字符串中读取内容
+
+strings.NewReader(str) 用于生成一个 Reader 并读取字符串中的内容，然后返回指向该 Reader 的指针。  
+
+Read() 从 [] byte 中读取内容。  
+
+ReadByte() 和 ReadRune() 从字符串中读取下一个 byte 或者 rune。
 
 
+#### 4.7.12 字符串与其它类型的转换
+
+与字符串相关的类型转换都是通过 strconv 包实现的。    
+
+该包包含了一些变量用于获取程序运行的操作系统平台下 int 类型所占的位数，如：strconv.IntSize。  
+
+任何类型 T 转换为字符串总是成功的。  
+
+针对从数字类型转换到字符串，Go 提供了以下函数：
+
+- strconv.Itoa(i int) string 返回数字 i 所表示的字符串类型的十进制数。
+- strconv.FormatFloat(f float64, fmt byte, prec int, bitSize int) string 将 64 位浮点型的数字转换为字符串，
+其中 fmt 表示格式（其值可以是 'b'、'e'、'f' 或 'g'），prec 表示精度，
+bitSize 则使用 32 表示 float32，用 64 表示 float64。
+
+将字符串转换为其它类型 tp 并不总是可能的，可能会在运行时抛出错误 parsing "…": invalid argument。  
+
+针对从字符串类型转换为数字类型，Go 提供了以下函数：
+
+- strconv.Atoi(s string) (i int, err error) 将字符串转换为 int 型。
+- strconv.ParseFloat(s string, bitSize int) (f float64, err error) 将字符串转换为 float64 型。
+
+从字符串到其它类型的转换：
+
+~~~go
+val, err = strconv.Atoi(s)
+~~~
 
 
+#### 4.8. 时间和日期
+
+time 包提供一个数据类型 time.Time （作为值使用）以及显示和测量时间和日期的功能函数。  
+
+当前时间可以使用 time.Now() 获取，或者使用 t.Day()、t.Minute() 等等来获取时间的一部分；你甚至可以自定义时间格式化字符串，例如： fmt.Printf("%02d.%02d.%4d\n", t.Day()
+, t.Month(), t.Year()) 将会输出 21.07.2011。  
+
+Duration 类型表示两个连续时刻所相差的纳秒数，类型为 int64。
+Location 类型映射某个时区的时间，UTC 表示通用协调世界时间。  
+
+~~~go
+fmt.Println(t.Format("02 Jan 2006 15:04"))
+~~~
+
+
+#### 4.9 指针
+
+Go 提供了控制数据结构的指针的能力，但是不能进行指针运算。  
+
+Go 取地址符是 &，放在一个变量前使用就会返回相应变量的内存地址。  
+
+声明指针：
+
+~~~go
+var intP *int
+~~~
+
+然后使用 intP = &il 是合法的，此时 intP 指向 il。（指针的格式化标识符为 %p）  
+
+intP 存储了 il 的内存地址；它指向了 il 的位置，它引用了变量 il。  
+
+一个指针变量可以指向任何一个值内存地址，它指向那个值的内存地址，在 32 位机器上占用 4 个字节，在 64 位机器上占用 8 个字节，
+并且与它所指向的值的大小无关。当然，可以声明指针指向任何类型的值来表明它的原始性或结构性；
+你可以在指针类型前面加上 * 号（前缀）来获取指针所指向的内容，这里的 * 号是一个类型更改器。
+使用一个指针引用一个值被称为间接引用。
+
+当一个指针被定义后没有分配到任何变量时，它的值为 nil。  
+
+一个指针变量通常缩写为 ptr。  
+
+##### 注意事项
+
+在书写表达式类似 var p *type 时，切记在 * 号和指针名称间留有一个空格，因为 ` var ptype ` 是语法正确的，但是在更复杂的表达式中，它容易被误认为是一个乘法表达式！  
+
+符号 * 可以放在一个指针前，如 *intP，那么它将得到这个指针指向地址上所存储的值；这被称为反引用（或者内容或者间接引用）操作符；另一种说法是指针转移。  
+
+对于任何一个变量 var， 如下表达式都是正确的：var == *(&var)。  
+
+程序 string_pointer.go 为我们展示了指针对 string 的例子。  
+
+~~~go
+package main
+import "fmt"
+func main() {
+    s := "good bye"
+    var p *string = &s
+    *p = "ciao"
+    fmt.Printf("Here is the pointer p: %p\n", p) // prints address
+    fmt.Printf("Here is the string *p: %s\n", *p) // prints string
+    fmt.Printf("Here is the string s: %s\n", s) // prints same string
+}
+~~~
+
+输出
+
+~~~go
+Here is the pointer p: 0x2540820
+Here is the string *p: ciao
+Here is the string s: ciao
+~~~
+
+通过对 *p 赋另一个值来更改 “对象”，这样 s 也会随之更改。  
+
+#### 注意事项
+
+你不能得到一个文字或常量的地址，例如：
+
+~~~go
+const i = 5
+ptr := &i //error: cannot take the address of i
+ptr2 := &10 //error: cannot take the address of 10
+~~~
+
+Go 语言中的指针保证了内存安全，更像是 Java、C# 和 VB.NET 中的引用。  
+
+因此 c = *p++ 在 Go 语言的代码中是不合法的。  
+
+指针可以传递一个变量的引用（如函数的参数），这样不会传递变量的拷贝。指针传递只占用 4 个或 8 个字节。
+当程序在工作中需要占用大量的内存，或很多变量，或者两者都有，使用指针会减少内存占用和提高效率。
+被指向的变量也保存在内存中，直到没有任何指针指向它们，所以从它们被创建开始就具有相互独立的生命周期。  
+
+另一方面（虽然不太可能），由于一个指针导致的间接引用（一个进程执行了另一个地址），指针的过度频繁使用也会导致性能下降。  
+
+指针也可以指向另一个指针，并且可以进行任意深度的嵌套，导致你可以有多级的间接引用，但在大多数情况这会使你的代码结构不清晰。  
+
+对一个空指针的反向引用是不合法的，并且会使程序崩溃：  
+
+示例 4.23 testcrash.go:
+
+~~~go
+package main
+func main() {
+    var p *int = nil
+    *p = 0
+}
+// in Windows: stops only with: <exit code="-1073741819" msg="process crashed"/>
+// runtime error: invalid memory address or nil pointer dereference
+~~~

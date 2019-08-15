@@ -176,3 +176,192 @@ switch a, b := x[i], y[j]; {
     case a > b: t = 1
 }
 ~~~
+
+
+#### 5.4. for 结构
+
+#### 5.4.1 基于计数器的迭代
+
+基本形式：
+
+~~~go
+for 初始化语句; 条件语句; 修饰语句 {}
+~~~
+
+示例 5.6 for1.go
+
+~~~go
+package main
+
+import "fmt"
+
+func main() {
+	for i := 0; i < 5; i++ {
+		fmt.Printf("This is the %d iteration\n", i)
+	}
+}
+~~~
+
+输出：
+
+~~~
+This is the 0 iteration
+This is the 1 iteration
+This is the 2 iteration
+This is the 3 iteration
+This is the 4 iteration
+~~~
+
+特别注意，永远不要在循环体内修改计数器。  
+
+同时使用多个计数器：
+
+~~~go
+for i, j := 0, N; i < j; i, j = i+1, j-1 {}
+~~~
+
+for 循环嵌套使用：
+
+~~~go
+for i:=0; i<5; i++ {
+	for j:=0; j<10; j++ {
+		println(j)
+	}
+}
+~~~
+
+ASCII 编码的字符占用 1 个字节，既每个索引都指向不同的字符，而非 ASCII 编码的字符（占有 2 到 4 个字节）不能单纯地使用索引来判断是否为同一个字符。  
+
+
+#### 5.4.2 基于条件判断的迭代
+
+for 结构的第二种形式是没有头部的条件判断迭代（类似其它语言中的 while 循环），基本形式为：for 条件语句 {}。  
+
+您也可以认为这是没有初始化语句和修饰语句的 for 结构，因此 <code>;;</code> 便是多余的了。  
+
+Listing 5.8 for2.go
+
+~~~go
+package main
+
+import "fmt"
+
+func main() {
+    var i int = 5
+
+    for i >= 0 {
+        i = i - 1
+        fmt.Printf("The variable i is now: %d\n", i)
+    }
+}
+~~~
+
+输出：
+
+~~~
+The variable i is now: 4
+The variable i is now: 3
+The variable i is now: 2
+The variable i is now: 1
+The variable i is now: 0
+The variable i is now: -1
+~~~
+
+
+#### 5.4.3 无限循环
+
+条件语句是可以被省略的，如 <code>i:=0; ; i++</code> 或 <code>for { }</code> 或 <code>for ;; { }</code>（;; 会在使用 gofmt 
+时被移除）：这些循环的本质就是无限循环。
+最后一个形式也可以被改写为 <code>for true { }</code>，但一般情况下都会直接写 <code>for { }</code>。  
+
+如果 for 循环的头部没有条件语句，那么就会认为条件永远为 true，因此循环体内必须有相关的条件判断以确保会在某个时刻退出循环。  
+
+想要直接退出循环体，可以使用 break 语句（第 5.5 节）或 return 语句直接返回（第 6.1 节）。  
+
+但这两者之间有所区别，break 只是退出当前的循环体，而 return 语句提前对函数进行返回，不会执行后续的代码。  
+
+无限循环的经典应用是服务器，用于不断等待和接受新的请求。
+
+~~~go
+for t, err = p.Token(); err == nil; t, err = p.Token() {
+    ...
+}
+~~~
+
+
+#### 5.4.4 for-range 结构
+
+可以迭代任何一个集合（包括数组和 map，详见第 7 和 8 章）。  
+
+语法上很类似其它语言中 foreach 语句，但您依旧可以获得每次迭代所对应的索引。一般形式为：for ix, val := range coll { }。
+
+
+要注意的是，val 始终为集合中对应索引的值拷贝，因此它一般只具有只读性质，对它所做的任何修改都不会影响到集合中原有的值（译者注：如果 val 为指针，则会产生指针的拷贝，依旧可以修改集合中的原值）。  
+
+迭代 Unicode 编码的字符串：
+
+~~~go
+for pos, char := range str {
+...
+}
+~~~
+
+每个 rune 字符和索引在 for-range 循环中是一 一对应的。它能够自动根据 UTF-8 规则识别 Unicode 编码的字符。  
+
+常用英文字符使用 1 个字节表示，而汉字（译者注：严格来说，“Chinese: 日本語” 的 Chinese 应该是 Japanese）使用 3 个字符表示。
+
+
+#### 5.5. Break 与 continue
+
+一个 break 的作用范围为该语句出现后的最内部的结构，它可以被用于任何形式的 for 循环（计数器、条件判断等）。但在 switch 或 select 语句中（详见第 13 章），break 
+语句的作用结果是跳过整个代码块，执行后续的代码。  
+
+关键字 continue 忽略剩余的循环体而直接进入下一次循环的过程，但不是无条件执行下一次循环，执行之前依旧需要满足循环的判断条件。  
+
+
+#### 5.6. 标签与 goto
+
+特别注意 使用标签和 goto 语句是不被鼓励的：它们会很快导致非常糟糕的程序设计，而且总有更加可读的替代方案来实现相同的需求。
+
+定义但未使用标签会导致编译错误：label … defined and not used。  
+
+如果您必须使用 goto，应当只使用正序的标签（标签位于 goto 语句之后），但注意标签和 goto 语句之间不能出现定义新变量的语句，否则会导致编译失败。  
+
+continue 示例：
+
+~~~go
+package main
+
+import "fmt"
+
+func main() {
+
+LABEL1:
+    for i := 0; i <= 5; i++ {
+        for j := 0; j <= 5; j++ {
+            if j == 4 {
+                continue LABEL1
+            }
+            fmt.Printf("i is: %d, and j is: %d\n", i, j)
+        }
+    }
+
+}
+~~~
+
+break 示例：
+
+~~~go
+package main
+
+func main() {
+    i:=0
+    HERE:
+        print(i)
+        i++
+        if i==5 {
+            return
+        }
+        goto HERE
+}
+~~~

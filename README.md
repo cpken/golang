@@ -8,7 +8,7 @@
 3. [编辑器、集成开发环境与其它工具](https://github.com/cpken/theWayToGoNote/tree/master/03)
 4. [基本结构和基本数据类型](https://github.com/cpken/theWayToGoNote/tree/master/04)
 5. [控制结构](https://github.com/cpken/theWayToGoNote/tree/master/05)
-6. 函数(function)
+6. [函数(function)](https://github.com/cpken/theWayToGoNote/tree/master/05)
 7. 数组与切片
 8. Map
 9. 包(package)

@@ -92,11 +92,13 @@ type binOp func(int, int) int
 但会增加代码复杂度，性能也会降低。  
 
 
+
 #### 6.2 函数参数与返回值
 
 Go 可以定义没有形参名的函数，只有相应的形参类型，像这样：func f(int, int, float64)。  
 
-没有参数的函数通常被称为 niladic 函数（niladic function），就像 main.main()。
+没有参数的函数通常被称为 niladic 函数（niladic function），就像 main.main()。  
+
 
 
 #### 6.2.1 按值传递（call by value） 按引用传递（call by reference）

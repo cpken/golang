@@ -28,5 +28,5 @@ var arr1 [5]int
 
 在内存中的结构是：
 
-[](07-1.png)
+![image](https://github.com/cpken/theWayToGoNote/tree/master/07/07-1.png)
 

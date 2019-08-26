@@ -30,3 +30,62 @@ var arr1 [5]int
 
 ![image](https://github.com/cpken/theWayToGoNote/blob/master/07/07-1.png)
 
+每个元素是一个整形值，当声明数组时所有的元素都会被自动初始化为默认值 0。  
+
+arr1 的长度是 5，索引范围从 0 到 len(arr1)-1。  
+
+使用 for 结构遍历数组：
+
+- 通过 for 初始化数组项
+- 通过 for 打印数组元素
+- 通过 for 依次处理元素
+
+示例 7.1 for_arrays.go
+
+~~~go
+package main
+import "fmt"
+
+func main() {
+	var arr1 [5]int
+	
+	for i:=0; i < len(arr1); i++ {
+		arr1[i] = i * 2
+	}
+	
+	for i:=0; i < len(arr1); i++ {
+		fmt.Printf("Array at idnex %d is %d\n", i, arr1[i])
+	}
+}
+~~~
+
+输出结果：
+
+~~~
+Array at index 0 is 0
+Array at index 1 is 2
+Array at index 2 is 4
+Array at index 3 is 6
+Array at index 4 is 8
+~~~
+
+Go 语言中的数组是一种 值类型（不像 C/C++ 中是指向首元素的指针），所以可以通过 new() 来创建：
+var arr1 = new([5]int)。  
+
+那么这种方式和 var arr2 [5]int 的区别是什么？ arr1 的类型是 *[5]int，而 arr2 的类型是 [5]int。  
+
+这样的结果就是当把一个数组赋值给另一个时，需要在做一次数组内存的拷贝操作，例如：
+
+~~~go
+arr2 := arr1
+arr2[2] = 100
+~~~
+
+在函数中数组作为参数传入时，会产生一次数组拷贝，拷贝不会修改原始的数组。  
+
+通过使用 & 操作符以引用方式传过来，可以修改原始的数组。
+
+<br><br>
+
+
+#### 7.1.2 数组常量

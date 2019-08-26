@@ -697,5 +697,38 @@ func(x, y int) int {return x + y}
 
 #### 6.10 使用闭包调试
 
+runtime 或 log 包。  
+
+runtime.Caller(1)。
+
+<br/><br/>
+
+
+##### 6.11 计算函数执行时间
+
+在计算开始之前设置一个起始时候，再由计算结束的结束时间，最后取出它们的差值，就可以计算出函数执行时间。
+使用 time 包中的 Now() 和 Sub 函数：
+
+~~~go
+start := time.Now()
+
+longCalculation()
+
+end := time.Now()
+
+delta := end.Sub(start)
+
+fmt.Printf("longCalculation took this amount of time: %\n", delta)
+~~~
+
+<br/><br/>
+
+
+#### 6.12 通过内存缓存来提升性能
+
+避免重复计算。通过在内存中缓存和重复利用相同计算的结果，称之为内存缓存。最明显的例子就是 斐波那契数列。
+
+
+
 
 

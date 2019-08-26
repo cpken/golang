@@ -9,7 +9,7 @@
 4. [基本结构和基本数据类型](https://github.com/cpken/theWayToGoNote/tree/master/04)
 5. [控制结构](https://github.com/cpken/theWayToGoNote/tree/master/05)
 6. [函数(function)](https://github.com/cpken/theWayToGoNote/tree/master/06)
-7. 数组与切片
+7. [数组与切片](https://github.com/cpken/theWayToGoNote/tree/master/07)
 8. Map
 9. 包(package)
 10. 结构(struct)与方法(method)

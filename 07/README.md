@@ -89,3 +89,139 @@ arr2[2] = 100
 
 
 #### 7.1.2 数组常量
+
+通过 数组常量 的方法初始化数组，而不用依次使用 []= 方法（所有的组成元素都有相同的常量语法）。  
+
+示例 7.3 array_literals.go
+
+~~~go
+package main
+import "fmt"
+
+func main() {
+	//var arrAge      = [5]int{18, 20, 15, 22, 16}
+	//var arrLazy     = [...]int{5, 6, 7, 8, 22}
+	//var arrLazy     = []int{5, 6, 7, 8, 22}
+	var arrKeyValue = [5]string{3:"Chris", 4:"Ron"}
+	//var arrKeyValue = []string{3:"Chris", 4:"Ron"}
+	
+	for i:=0; i < len(arrKeyValue); i++ {
+		fmt.Printf("Person at %d is %s\n", i, arrKeyValue[i])
+	}
+}
+~~~
+
+第一种变化：
+~~~
+var arrAge = [5]int{18, 20, 15, 22, 16}
+~~~
+
+注意 [5]int 可以从左边起开始忽略：[10]int {1, 2, 3} 这是一个有 10 个元素的数组，除了前三个元素外其它元素都为 0。  
+
+第二种变化：  
+~~~
+var arrLazy = [...]int{5, 6, 7, 8}
+~~~
+
+<code>...</code> 可同样可以忽略，从技术上说它们其实变化成了切片。  
+
+第三种变化：key: value syntax
+
+~~~
+var arrKeyValue = [5]string{3:"Chris", 4:"Ron"}
+~~~
+
+只有索引 3 和 4 被赋予实际的值，其它元素都被设置为空的字符串，所以输出结果为：
+
+~~~
+Person at 0 is
+Person at 1 is
+Person at 2 is
+Person at 3 is Chris
+Person at 4 is Ron
+~~~
+
+<br/>
+<br/>
+
+#### 7.1.3 多维数组
+
+多维数组：[3][5]int，[2][2][2]float64。  
+
+内部数组总是长度相同的。Go 语言的多维数组是矩形式的（唯一的例外是切片的数组）。  
+
+示例 7.5 multidim_array.go
+
+~~~go
+package main
+const (
+	WIDTH   = 1920
+	HEIGHT  = 1000
+)
+
+type pixel int
+var screen [WIDTH][HEIGHT]pixel
+
+func main () {
+	for y := 0; y < HEIGHT; y++ {
+		for x := 0; x < WIDTH; x++ {
+			screen[x][y] = 0
+		}
+	}
+}
+~~~
+
+<br/>
+<br/>
+
+
+#### 7.1.4 将数组传递给函数
+
+将第一个大数组传递给函数会消耗很多内存。
+
+- 传递数组的指针
+- 使用数组的切片
+
+<br/>
+<br/>
+
+##### 7.2.1 概念
+
+切片（slice）是对数组一个连续片段的引用（该数组我们称之为相关数组，通过是匿名的）。切片是 引用类型。  
+
+切片是可索引的，并且可以由 len() 函数获取长度。  
+
+给定项的切片索引可能比相关数组的相同元素的索引小。和数组不同的是，切片的长度可以在运行时修改，最小
+为 0 最大为相关数组的长度：切片是一个 长度可变的数组。  
+
+切片提供了计算容量的函数 cap() 可以测量切片最长可以达到多少：它等于切片的长度 + 数组除切片之外的长度。
+如果 s 是一个切片，cap(s) 就是从 s[0] 到数组末尾的数组长度。切片的长度永远不会超过它的容量，所以对于 切片s 来说
+该不等式永远成立：0 <= len(s) <= cap(s)。  
+
+多个切片如果表示同一个数组的片段，它们可以共享数据：因此一个切片和相关数组的其他切片是共享存储的，相反，
+不同的数组总是代表不同的存储。数组实际上是切片的构建块。  
+
+优点 因为切片是引用，所以它们不需要使用额外的内存并且比使用数组更有效率，所以 GO 代码中切片比数组更常用。  
+
+声明切片：var identifier []type （不需要说明长度）。  
+
+一个切片在未初始化之前默认为 nil，长度为 0 。
+
+切片初始化：var slicel []type = arr1[start:end]。  
+
+这表示 slice1 是由数组 arr1 从 start 索引到  end-1 索引之间的元素构成的子集（切分数组，start:end 被称
+为 slice 表达式）。所以 slice1[0] 就等于 arr1[start] 。  
+
+如果某个人写： var slice1 []type = arr1[:] 那么 slice1 就等于完整的 arr1 数组（所以这种表示方
+式是 arr1[0:len(arr1)] 的一种缩写）。  
+
+另外一种表述方式是： slice1 = &arr1 。  
+arr1[2:] 和  arr1[2:len(arr1)] 相同，都包含了数组从第二个到最后的所有元素。  
+arr1[:3] 和  arr1[0:3] 相同，包含了从第一个到第三个元素（不包括第三个）。  
+如果你想去掉 slice1 的最后一个元素，只要 slice1 = slice1[:len(slice1)-1] 。  
+ 
+一个由数字 1、2、3 组成的切片可以这么生成： s := [3]int{1,2,3} 甚至更简单的
+s := []int{1,2,3} 。  
+
+
+
